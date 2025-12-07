@@ -1,0 +1,109 @@
+/* Color Variables & Theme Configuration */
+:root {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    --bg-card: #1e293b;
+    --bg-hover: #2563eb;
+    --accent-primary: #3b82f6;
+    --accent-secondary: #1d4ed8;
+    --accent-success: #10b981;
+    --accent-warning: #f59e0b;
+    --accent-danger: #ef4444;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --border-primary: #334155;
+    --border-secondary: #475569;
+}
+
+/* Base Body Styles */
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Component: Card */
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-primary);
+    transition: all 0.3s ease;
+}
+
+/* Component: Input Fields */
+.input-field {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-secondary);
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+/* Component: Buttons */
+.btn-primary {
+    background-color: var(--accent-primary);
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-secondary);
+}
+
+/* Navigation */
+.nav-link.active {
+    background-color: var(--accent-primary);
+    color: var(--text-primary);
+}
+
+/* Dialog / Modal Styling */
+dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Login Form Transitions */
+.form-container {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.5s ease-in-out;
+    opacity: 0;
+}
+
+.form-container.active {
+    max-height: 300px;
+    opacity: 1;
+}
+
+/* Role Selection Cards */
+.role-card {
+    cursor: pointer;
+    border: 2px solid var(--border-primary);
+    overflow-wrap: break-word;
+}
+
+.role-card.active {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+}
