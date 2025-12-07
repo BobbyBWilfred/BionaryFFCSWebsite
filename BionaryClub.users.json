@@ -1,0 +1,783 @@
+[{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6646"
+  },
+  "regNo": "24BAI1036",
+  "name": "SHAIK SIRAJ",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "shaik.siraj2024@vitstudent.ac.in",
+  "phone": "+91-9866804562"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6647"
+  },
+  "regNo": "24BAI1037",
+  "name": "KALAPALA NAGA CHIRANJEEVI",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "kalapala.naga2024@vitstudent.ac.in",
+  "phone": "+91-8125838771"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6648"
+  },
+  "regNo": "24BAI1039",
+  "name": "BUGIDI BALA ADITHYA",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "bugidi.balaadithya2024@vitstudent.ac.in",
+  "phone": "+91-9441025744"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6649"
+  },
+  "regNo": "24BAI1041",
+  "name": "KUNCHA SAI KIRAN REDDY",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "kuncha.sai2024@vitstudent.ac.in",
+  "phone": "+91-7702874062"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc664a"
+  },
+  "regNo": "24BAI1069",
+  "name": "PICHUKA BALA GANESH",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "pichuka.balaganesh2024@vitstudent.ac.in",
+  "phone": "+91-6281350155"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc664b"
+  },
+  "regNo": "24BAI1111",
+  "name": "LOHET S RATNAKAR",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "lohet.sratnakar2024@vitstudent.ac.in",
+  "phone": "+91-8925482908"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc664c"
+  },
+  "regNo": "24BAI1143",
+  "name": "MEIYAPPAN K",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "meiyappan.k2024@vitstudent.ac.in",
+  "phone": "+91-6382483781"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc664d"
+  },
+  "regNo": "24BAI1266",
+  "name": "VISHAL S",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "vishal.s2024a@vitstudent.ac.in",
+  "phone": "+91-6380829745"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc664e"
+  },
+  "regNo": "24BAI1310",
+  "name": "DONTHULASHETTY SANJAY KUMAR",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "donthulashetty.san2024@vitstudent.ac.in",
+  "phone": "+91-9032018113"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc664f"
+  },
+  "regNo": "24BAI1338",
+  "name": "RAGHAVAN S",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "raghavan.s2024@vitstudent.ac.in",
+  "phone": "+91-9047473677"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6650"
+  },
+  "regNo": "24BAI1417",
+  "name": "MADISETTY PRAMOD",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "madisetty.pramod2024@vitstudent.ac.in",
+  "phone": "+91-8008519970"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6651"
+  },
+  "regNo": "24BAI1454",
+  "name": "KARANAM KRISHNA SUMANTH",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "karanam.krishna2024@vitstudent.ac.in",
+  "phone": "+91-9703020646"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6652"
+  },
+  "regNo": "24BAI1516",
+  "name": "GUNDU NAGARJUNA",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "gundu.nagarjuna2024@vitstudent.ac.in",
+  "phone": "+91-9347428909"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6653"
+  },
+  "regNo": "24BAI1528",
+  "name": "TWISSAMPATI BAL",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "twissampati.bal2024@vitstudent.ac.in",
+  "phone": "+91-9437167793"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6654"
+  },
+  "regNo": "24BAI1564",
+  "name": "RITVIKA SAVANNA",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "ritvika.savanna2024@vitstudent.ac.in",
+  "phone": "+91-9884946025"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6655"
+  },
+  "regNo": "24BCE1024",
+  "name": "PRASANNA K",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "prasanna.k2024a@vitstudent.ac.in",
+  "phone": "+91-7871165415"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6656"
+  },
+  "regNo": "24BCE1162",
+  "name": "PRABANJAN M",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "prabanjan.m2024@vitstudent.ac.in",
+  "phone": "+91-9840176589"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6657"
+  },
+  "regNo": "24BCE1264",
+  "name": "GNANA GURU N",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "gnanaguru.n2024@vitstudent.ac.in",
+  "phone": "+91-7338928875"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6658"
+  },
+  "regNo": "24BCE1268",
+  "name": "PALAGANI JHARNAVI",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "palagani.jharnavi2024@vitstudent.ac.in",
+  "phone": "+91-9121095996"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6659"
+  },
+  "regNo": "24BCE1293",
+  "name": "ARAVIND G",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "aravind.g2024@vitstudent.ac.in",
+  "phone": "+91-9488730975"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc665a"
+  },
+  "regNo": "24BCE1380",
+  "name": "DIVYAM MADAN",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "divyam.madan2024@vitstudent.ac.in",
+  "phone": "+91-8468071875"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc665b"
+  },
+  "regNo": "24BCE1466",
+  "name": "SURYANSH PANDA",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "suryansh.panda2024@vitstudent.ac.in",
+  "phone": "+91-9974031357"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc665c"
+  },
+  "regNo": "24BCE1470",
+  "name": "UMANG RAJ",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "umang.raj2024@vitstudent.ac.in",
+  "phone": "+91-9142447168"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc665d"
+  },
+  "regNo": "24BCE1493",
+  "name": "SRINIDHI VISHAL CHEJARLA",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "srinidhi.vishal2024@vitstudent.ac.in",
+  "phone": "+91-9566690969"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc665e"
+  },
+  "regNo": "24BCE1494",
+  "name": "ANIMESH CHOUDHARY",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "animesh.choudhary2024@vitstudent.ac.in",
+  "phone": "+91-6350695356"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc665f"
+  },
+  "regNo": "24BCE1625",
+  "name": "SAMYUKTHA CHOWDARY VADLAMUDI",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "samyuktha.chowdary2024@vitstudent.ac.in",
+  "phone": "+91-9900720963"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6660"
+  },
+  "regNo": "24BCE1637",
+  "name": "SUDALAGUNTA SRI POOJITHA",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "sudalagunta.sri2024@vitstudent.ac.in",
+  "phone": "+91-6304834520"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6661"
+  },
+  "regNo": "24BCE1754",
+  "name": "DONTHARABOINA PARDHU VENKATTA",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "dontharaboina.pard2024@vitstudent.ac.in",
+  "phone": "+91-9542989081"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6662"
+  },
+  "regNo": "24BCE1813",
+  "name": "SHRUTHI SUBRAMANIAN",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "shruthi.subramanian2024@vitstudent.ac.in",
+  "phone": "+91-9677265859"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6663"
+  },
+  "regNo": "24BCE1821",
+  "name": "ONKAR CHALEKAR",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "onkar.chalekar2024@vitstudent.ac.in",
+  "phone": "+91-7710181659"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6664"
+  },
+  "regNo": "24BCE5001",
+  "name": "SHASHANKA SHEKHAR NAYAK",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "shashanka.shekhar2024@vitstudent.ac.in",
+  "phone": "+91-8860266600"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6665"
+  },
+  "regNo": "24BCE5133",
+  "name": "SHREYA SINGLA",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "shreya.singla2024@vitstudent.ac.in",
+  "phone": "+91-9041255736"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6666"
+  },
+  "regNo": "24BCE5219",
+  "name": "GURRAM HANSIDDH",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "hansiddh.gurram2024@vitstudent.ac.in",
+  "phone": "+91-7816025034"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6667"
+  },
+  "regNo": "24BCE5240",
+  "name": "V PADMAPRIYA",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "padmapriya.v2024@vitstudent.ac.in",
+  "phone": "+91-9952050391"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6668"
+  },
+  "regNo": "24BCE5361",
+  "name": "JOEL ALFRED ISRAEL",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "joel.alfredisrael2024@vitstudent.ac.in",
+  "phone": "+91-9840753301"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6669"
+  },
+  "regNo": "24BCE5392",
+  "name": "NITHIN R",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "nithin.r2024a@vitstudent.ac.in",
+  "phone": "+91-6380706432"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc666a"
+  },
+  "regNo": "24BCE5433",
+  "name": "POOJAA R",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "poojaa.r2024@vitstudent.ac.in",
+  "phone": "+91-8903547583"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc666b"
+  },
+  "regNo": "24BCE5437",
+  "name": "NITHYASHREE A",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "nithyashree.a2024@vitstudent.ac.in",
+  "phone": "+91-9629931374"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc666c"
+  },
+  "regNo": "24BCE5460",
+  "name": "TARUN KRISHNA MANIVANNAN",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "tarun.krishna2024@vitstudent.ac.in",
+  "phone": "+91-9080342989"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc666d"
+  },
+  "regNo": "24BCE5499",
+  "name": "SAKTHIVEL RAJENDRAN",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "sakthivel.rajendran2024@vitstudent.ac.in",
+  "phone": "+91-0"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc666e"
+  },
+  "regNo": "24BCE5516",
+  "name": "DIVYAA DHARSHINI T",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "divyaadharshini.t2024@vitstudent.ac.in",
+  "phone": "+91-9791868305"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc666f"
+  },
+  "regNo": "24BCE5541",
+  "name": "ADITHYA J",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "adithya.j2024@vitstudent.ac.in",
+  "phone": "+91-9445251921"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6670"
+  },
+  "regNo": "24BDS1112",
+  "name": "VASUN",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "vasun.2024@vitstudent.ac.in",
+  "phone": "+91-9430012979"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6671"
+  },
+  "regNo": "24BEC1279",
+  "name": "HARITEIJ GHANTOJI",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "hariteij.ghantoji2024@vitstudent.ac.in",
+  "phone": "+91-9948808877"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6672"
+  },
+  "regNo": "24BEC1417",
+  "name": "NAGULAPALLI MOUNICA SRINIDHI",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "nagulapalli.mounica2024@vitstudent.ac.in",
+  "phone": "+91-9329086393"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6673"
+  },
+  "regNo": "24BEC1436",
+  "name": "VISHAAL MADHAV S K",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "vishaalmadhav.s2024@vitstudent.ac.in",
+  "phone": "+91-9487059523"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6674"
+  },
+  "regNo": "24BEC1547",
+  "name": "AADHITHYAH G R",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "aadhithyah.gr2024@vitstudent.ac.in",
+  "phone": "+91-9574066656"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6675"
+  },
+  "regNo": "24BEE1188",
+  "name": "S VISHNU ABISHEK",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "vishnuabishek.s2024@vitstudent.ac.in",
+  "phone": "+91-9791505035"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6676"
+  },
+  "regNo": "24BEE1217",
+  "name": "ARUN J T",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "arun.jt2024@vitstudent.ac.in",
+  "phone": "+91-9842068940"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6677"
+  },
+  "regNo": "24BLC1016",
+  "name": "ANNAM CHETHAN GUPTA",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "annam.chethangupta2024@vitstudent.ac.in",
+  "phone": "+91-9392280871"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6678"
+  },
+  "regNo": "24BLC1212",
+  "name": "AKHILESH BHARADHWAJ SRINIVASAN",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "akhilesh.bharadhwaj2024@vitstudent.ac.in",
+  "phone": "+91-9840807098"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6679"
+  },
+  "regNo": "24BLC1294",
+  "name": "ABOTHULA ABHI GNANA PRAKASH",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "abothula.abhi2024@vitstudent.ac.in",
+  "phone": "+91-9493095944"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc667a"
+  },
+  "regNo": "24BLC1298",
+  "name": "S T SACHIN SAMUEL",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "sachinsamuel.st2024@vitstudent.ac.in",
+  "phone": "+91-8122179896"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc667b"
+  },
+  "regNo": "24BLC1314",
+  "name": "NAMAN BHATIA",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "naman.bhatia2024@vitstudent.ac.in",
+  "phone": "+91-7976028041"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc667c"
+  },
+  "regNo": "24BMH1054",
+  "name": "KHARBANDA MANSA GURDARSHAN SINGH",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "mansa.kharbanda2024@vitstudent.ac.in",
+  "phone": "+91-9372128290"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc667d"
+  },
+  "regNo": "24BMH1180",
+  "name": "V M ASHWINKUMAR",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "ashwinkumar.vm2024@vitstudent.ac.in",
+  "phone": "+91-8072069403"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc667e"
+  },
+  "regNo": "24BPS1026",
+  "name": "PATNAM AAHIL BABA",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "patnam.aahilbaba2024@vitstudent.ac.in",
+  "phone": "+91-7675094726"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc667f"
+  },
+  "regNo": "24BPS1059",
+  "name": "ISHANT GUPTA",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "ishant.gupta2024@vitstudent.ac.in",
+  "phone": "+91-9351114768"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6680"
+  },
+  "regNo": "24BRS1046",
+  "name": "DHANASHREE S",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "dhanashree.s2024@vitstudent.ac.in",
+  "phone": "+91-6374059592"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6681"
+  },
+  "regNo": "24BRS1367",
+  "name": "E SAARUVATHANI",
+  "role": "member",
+  "password": "password123",
+  "score": 0,
+  "email": "saaruvathani.e2024@vitstudent.ac.in",
+  "phone": "+91-9566036503"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6682"
+  },
+  "regNo": "ADMIN001",
+  "name": "Kalyan Sudarsan",
+  "role": "admin",
+  "password": "admin1"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6683"
+  },
+  "regNo": "ADMIN002",
+  "name": "Bobby B Wilfred",
+  "role": "admin",
+  "password": "admin2"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6684"
+  },
+  "regNo": "ADMIN003",
+  "name": "Hema Surya",
+  "role": "admin",
+  "password": "admin3"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6685"
+  },
+  "regNo": "ADMIN004",
+  "name": "Tarunika Anand",
+  "role": "admin",
+  "password": "admin4"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6686"
+  },
+  "regNo": "ADMIN005",
+  "name": "Krithika",
+  "role": "admin",
+  "password": "admin5"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6687"
+  },
+  "regNo": "ADMIN006",
+  "name": "Madhav Sharma",
+  "role": "admin",
+  "password": "admin6"
+},
+{
+  "_id": {
+    "$oid": "68c64fb93ae849380dcc6688"
+  },
+  "regNo": "ADMIN007",
+  "name": "Amrith Krishna",
+  "role": "admin",
+  "password": "admin7"
+}]
