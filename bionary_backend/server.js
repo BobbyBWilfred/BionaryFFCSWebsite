@@ -199,6 +199,25 @@ app.get("/api/tasks/:id", auth, async (req, res) => {
     res.json({ task, submissions });
 });
 
+// --- NEW DELETE ROUTE HERE ---
+app.delete("/api/tasks/:id", auth, adminOnly, async (req, res) => {
+    try {
+        const taskId = req.params.id;
+        // Delete the task
+        const task = await Task.findByIdAndDelete(taskId);
+        if (!task) return res.status(404).json({ message: "Task not found" });
+
+        // Cleanup: Delete all submissions associated with this task
+        await Submission.deleteMany({ taskId: taskId });
+
+        res.json({ message: "Task deleted successfully" });
+    } catch (error) {
+        console.error("Task deletion failed:", error);
+        res.status(500).json({ message: "Server error during task deletion" });
+    }
+});
+// -----------------------------
+
 app.get("/api/my-tasks", auth, async (req, res) => {
     try {
         const tasks = await Task.find({ assignedTo: req.user._id }).sort({ createdAt: -1 }).lean();
@@ -252,7 +271,9 @@ app.patch("/api/submissions/:id/grade", auth, adminOnly, async (req, res) => {
     if (!sub) return res.status(404).json({message: "Submission not found"});
 
     const task = await Task.findById(sub.taskId);
-    const points = Math.max(0, Math.min(Number(pointsAwarded) || 0, task.points));
+    // If task was deleted but submission remains (edge case), ensure safety
+    const maxPoints = task ? task.points : 100;
+    const points = Math.max(0, Math.min(Number(pointsAwarded) || 0, maxPoints));
     
     sub.pointsAwarded = points;
     sub.status = "graded";
@@ -366,4 +387,3 @@ const startApp = async () => {
 };
 
 startApp();
-
