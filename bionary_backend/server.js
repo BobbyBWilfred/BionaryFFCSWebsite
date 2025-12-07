@@ -11,9 +11,7 @@ const { Server } = require("socket.io");
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: { origin: "*" }
-});
+const io = new Server(server, { cors: { origin: "*" } });
 
 const PORT = process.env.PORT || 4000;
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -23,6 +21,7 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// --- SCHEMAS ---
 const UserSchema = new mongoose.Schema({
     regNo: { type: String, unique: true, required: true },
     name: String,
@@ -31,11 +30,7 @@ const UserSchema = new mongoose.Schema({
     score: { type: Number, default: 0 },
     email: String,
     phone: String,
-    socialLinks: {
-        linkedin: String,
-        github: String,
-        portfolio: String,
-    },
+    socialLinks: { linkedin: String, github: String, portfolio: String },
     experience: String,
 }, { timestamps: true });
 
@@ -53,11 +48,7 @@ const SubmissionSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     description: String,
     proofPath: String,
-    status: {
-        type: String,
-        enum: ["pending", "submitted", "graded"],
-        default: "submitted"
-    },
+    status: { type: String, enum: ["pending", "submitted", "graded"], default: "submitted" },
     pointsAwarded: { type: Number, default: 0 }
 }, { timestamps: true });
 
@@ -76,6 +67,7 @@ const Task = mongoose.model("Task", TaskSchema);
 const Submission = mongoose.model("Submission", SubmissionSchema);
 const Message = mongoose.model("Message", MessageSchema);
 
+// --- MIDDLEWARE ---
 function auth(req, res, next) {
     const hdr = req.headers.authorization || "";
     const token = hdr.startsWith("Bearer ") ? hdr.slice(7) : null;
@@ -106,16 +98,14 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+// --- ROUTES ---
 
 app.post("/api/auth/login", async (req, res) => {
     const { regNo, password, role } = req.body || {};
     const user = await User.findOne({ regNo });
     if (!user) return res.status(404).json({ message: "User not found" });
     if (role && user.role !== role) return res.status(400).json({ message: "Role mismatch" });
-    
-    if (password !== user.password) {
-        return res.status(400).json({ message: "Wrong credentials" });
-    }
+    if (password !== user.password) return res.status(400).json({ message: "Wrong credentials" });
 
     const token = jwt.sign({ _id: user._id, regNo: user.regNo, role: user.role, name: user.name }, JWT_SECRET, { expiresIn: "7d" });
     const { password: _, ...userPayload } = user.toObject();
@@ -171,9 +161,7 @@ app.post("/api/tasks", auth, adminOnly, async (req, res) => {
         return res.status(400).json({ message: "Invalid assignment target" });
     }
 
-    if (!title || !description) {
-        return res.status(400).json({ message: "Title and description are required" });
-    }
+    if (!title || !description) return res.status(400).json({ message: "Title and description are required" });
 
     try {
         const task = await Task.create({
@@ -183,7 +171,6 @@ app.post("/api/tasks", auth, adminOnly, async (req, res) => {
         });
         res.status(201).json({ task });
     } catch (error) {
-        console.error("Task creation failed:", error);
         res.status(500).json({ message: "Server error during task creation" });
     }
 });
@@ -199,24 +186,17 @@ app.get("/api/tasks/:id", auth, async (req, res) => {
     res.json({ task, submissions });
 });
 
-// --- NEW DELETE ROUTE HERE ---
 app.delete("/api/tasks/:id", auth, adminOnly, async (req, res) => {
     try {
         const taskId = req.params.id;
-        // Delete the task
         const task = await Task.findByIdAndDelete(taskId);
         if (!task) return res.status(404).json({ message: "Task not found" });
-
-        // Cleanup: Delete all submissions associated with this task
         await Submission.deleteMany({ taskId: taskId });
-
         res.json({ message: "Task deleted successfully" });
     } catch (error) {
-        console.error("Task deletion failed:", error);
         res.status(500).json({ message: "Server error during task deletion" });
     }
 });
-// -----------------------------
 
 app.get("/api/my-tasks", auth, async (req, res) => {
     try {
@@ -235,7 +215,6 @@ app.get("/api/my-tasks", auth, async (req, res) => {
         }));
         res.json({ tasks: shaped });
     } catch (error) {
-        console.error("Error fetching member tasks:", error);
         res.status(500).json({ message: "Failed to retrieve tasks" });
     }
 });
@@ -271,7 +250,6 @@ app.patch("/api/submissions/:id/grade", auth, adminOnly, async (req, res) => {
     if (!sub) return res.status(404).json({message: "Submission not found"});
 
     const task = await Task.findById(sub.taskId);
-    // If task was deleted but submission remains (edge case), ensure safety
     const maxPoints = task ? task.points : 100;
     const points = Math.max(0, Math.min(Number(pointsAwarded) || 0, maxPoints));
     
@@ -297,6 +275,7 @@ app.get("/api/leaderboard", auth, async (req, res) => {
     res.json({ leaderboard: users });
 });
 
+// --- SOCKET.IO ---
 io.use(async (socket, next) => {
     try {
         const token = socket.handshake.auth.token;
@@ -312,8 +291,6 @@ io.use(async (socket, next) => {
 });
 
 io.on("connection", async (socket) => {
-    console.log(`User connected: ${socket.user.regNo}`);
-
     const generalHistory = await Message.find({ type: "general" }).sort({ createdAt: 1 }).limit(100).lean();
     socket.emit("general:history", generalHistory);
 
@@ -331,7 +308,6 @@ io.on("connection", async (socket) => {
     socket.on("dm:history", async ({ withRegNo }) => {
         const peer = await User.findOne({ regNo: withRegNo });
         if (!peer) return;
-
         const msgs = await Message.find({
             type: "dm",
             $or: [
@@ -339,31 +315,23 @@ io.on("connection", async (socket) => {
                 { fromId: peer._id, toId: socket.user._id },
             ],
         }).sort({ createdAt: 1 }).limit(100).lean();
-
         socket.emit("dm:history", { withRegNo, messages: msgs });
     });
 
     socket.on("dm:send", async ({ toRegNo, text }) => {
-    const toUser = await User.findOne({ regNo: toRegNo });
-    if (!toUser) return;
-    if (socket.user.role === "member" && toUser.role !== "admin") {
-        console.log(`BLOCKED: Member ${socket.user.regNo} tried to DM non-admin ${toRegNo}.`);
-        return; 
-    }
-    const msg = await Message.create({
-        type: "dm",
-        fromId: socket.user._id,
-        toId: toUser._id,
-        fromRegNo: socket.user.regNo,
-        toRegNo: toUser.regNo,
-        fromName: socket.user.name,
-        text,
-    });
-    io.to(`user:${toUser._id}`).to(`user:${socket.user._id}`).emit("dm:new", msg);
-});
-
-    socket.on('disconnect', () => {
-        console.log(`User disconnected: ${socket.user.regNo}`);
+        const toUser = await User.findOne({ regNo: toRegNo });
+        if (!toUser) return;
+        if (socket.user.role === "member" && toUser.role !== "admin") return;
+        const msg = await Message.create({
+            type: "dm",
+            fromId: socket.user._id,
+            toId: toUser._id,
+            fromRegNo: socket.user.regNo,
+            toRegNo: toUser.regNo,
+            fromName: socket.user.name,
+            text,
+        });
+        io.to(`user:${toUser._id}`).to(`user:${socket.user._id}`).emit("dm:new", msg);
     });
 });
 
