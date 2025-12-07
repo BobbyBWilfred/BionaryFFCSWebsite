@@ -24,7 +24,6 @@
                 </div>
 
                 <div class="w-full max-w-4xl grid md:grid-cols-2 gap-8">
-
                     <div id="memberRoleCard" class="role-card card rounded-2xl p-8 text-center" onclick="selectRole('member')">
                         <i class="fas fa-users text-4xl text-blue-400 mb-4"></i>
                         <h2 class="text-2xl font-bold">FFCS Member</h2>
@@ -105,14 +104,12 @@
         currentChatTarget: null,
     };
 
-    // Generic Confirmation Helper
     function showConfirmation(title, message, onConfirm) {
         const modal = $('#confirmationModal');
         $('#confirmTitle').textContent = title;
         $('#confirmMsg').textContent = message;
         
         const btn = $('#confirmBtn');
-        // Remove old listeners to prevent stacking
         const newBtn = btn.cloneNode(true);
         btn.parentNode.replaceChild(newBtn, btn);
         
@@ -120,7 +117,6 @@
             onConfirm();
             modal.close();
         };
-        
         modal.showModal();
     }
      
@@ -146,17 +142,11 @@
 
     async function handleLogin() {
         const role = $('#role').value;
-        if (!role) {
-            showNotification('Please select a role first.', 'warning');
-            return;
-        }
+        if (!role) return showNotification('Please select a role first.', 'warning');
         const regNo = $(`#${role}RegNo`).value.trim();
         const password = $(`#${role}Password`).value;
 
-        if (!regNo || !password) {
-            showNotification('Please provide both credentials.', 'error');
-            return;
-        }
+        if (!regNo || !password) return showNotification('Please provide both credentials.', 'error');
 
         try {
             const res = await fetch("/api/auth/login", {
@@ -197,7 +187,7 @@
                 <div class="flex items-center gap-4">
                     <div class="w-14 h-14 rounded-full bg-blue-500 flex items-center justify-center text-xl font-bold">${state.me.name.substring(0, 2).toUpperCase()}</div>
                     <div>
-                        <h1 class="text-3xl font-bold">Welcome, ${state.me.name}</h1>
+                        <h1 id="welcome-header-name" class="text-3xl font-bold">Welcome, ${state.me.name}</h1>
                         <p class="text-sm text-blue-400 font-semibold uppercase tracking-wider">${state.me.role}</p>
                     </div>
                 </div>
@@ -217,7 +207,6 @@
             </div>
         `;
         setupNavigation();
-
         if(state.me.role === 'admin') loadAdminContent();
         else loadMemberContent();
     }
@@ -229,14 +218,12 @@
                 <li><a href="#" class="nav-link flex items-center gap-3 p-3 rounded-lg" data-tab="admin-members"><i class="fas fa-users w-5 text-center"></i> Members</a></li>
                 <li><a href="#" class="nav-link flex items-center gap-3 p-3 rounded-lg" data-tab="admin-tasks"><i class="fas fa-tasks w-5 text-center"></i> Tasks</a></li>
                 <li><a href="#" class="nav-link flex items-center gap-3 p-3 rounded-lg" data-tab="admin-leaderboard"><i class="fas fa-trophy w-5 text-center"></i> Leaderboard</a></li>
-                 
             `,
             tabs: `
                 <div id="admin-dashboard" class="tab-content hidden"></div>
                 <div id="admin-members" class="tab-content hidden"></div>
                 <div id="admin-tasks" class="tab-content hidden"></div>
                 <div id="admin-leaderboard" class="tab-content hidden"></div>
-                 
             `
         };
     }
@@ -247,13 +234,11 @@
                 <li><a href="#" class="nav-link flex items-center gap-3 p-3 rounded-lg" data-tab="member-tasks"><i class="fas fa-tasks w-5 text-center"></i> My Tasks</a></li>
                 <li><a href="#" class="nav-link flex items-center gap-3 p-3 rounded-lg" data-tab="member-profile"><i class="fas fa-user-circle w-5 text-center"></i> My Profile</a></li>
                 <li><a href="#" class="nav-link flex items-center gap-3 p-3 rounded-lg" data-tab="member-leaderboard"><i class="fas fa-trophy w-5 text-center"></i> Leaderboard</a></li>
-                 
             `,
             tabs: `
                 <div id="member-tasks" class="tab-content hidden"></div>
                 <div id="member-profile" class="tab-content hidden"></div>
                 <div id="member-leaderboard" class="tab-content hidden"></div>
-                 
             `
         };
     }
@@ -363,13 +348,13 @@
         try {
             await postApi('/api/submissions', formData, true);
             showNotification('Task submitted successfully!', 'success');
-            loadMemberTasks();
+            // Refresh logic
             $('#taskDetailModal').close();
+            loadMemberTasks(); // Refresh the list so it shows 'Submitted'
         } catch (error) {
             showNotification(`Submission failed: ${error.message}`, 'error');
         }
     }
-
 
     async function fetchApi(endpoint) {
         const res = await fetch(endpoint, { headers: { Authorization: `Bearer ${state.token}` } });
@@ -379,9 +364,7 @@
      
     async function postApi(endpoint, body, isFormData = false) {
         const headers = { Authorization: `Bearer ${state.token}` };
-        if (!isFormData) {
-            headers['Content-Type'] = 'application/json';
-        }
+        if (!isFormData) headers['Content-Type'] = 'application/json';
         const res = await fetch(endpoint, {
             method: 'POST',
             headers,
@@ -390,8 +373,6 @@
         if (!res.ok) throw new Error((await res.json()).message);
         return res.json();
     }
-
-
 
     async function loadAdminContent() {
         loadAdminDashboard();
@@ -440,9 +421,9 @@
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 rounded-full bg-bg-tertiary flex items-center justify-center font-bold text-lg">${user.name.substring(0, 2).toUpperCase()}</div>
                     <div class="min-w-0">
-    <h4 class="font-bold text-lg truncate">${user.name}</h4>
-    <p class="text-sm text-text-muted">${user.regNo}</p>
-</div>
+                        <h4 class="font-bold text-lg truncate">${user.name}</h4>
+                        <p class="text-sm text-text-muted">${user.regNo}</p>
+                    </div>
                 </div>
                 <p class="text-sm mt-4 font-semibold">Score: <span class="text-blue-400 text-lg">${user.score || 0}</span></p>
             </div>`).join("")}</div>`;
@@ -479,13 +460,10 @@
 
     async function createTask(e) {
         e.preventDefault();
-        
-        // Show confirmation popup before creating
         showConfirmation(
             "Create Task?", 
             "Are you sure you want to create and assign this task to the selected members?", 
             async () => {
-                // If Yes is clicked:
                 const selectedOptions = Array.from($("#taskAssignTo").selectedOptions).map(opt => opt.value);
                 const payload = {
                     title: $("#taskTitle").value, description: $("#taskDesc").value,
@@ -497,8 +475,9 @@
                     await postApi("/api/tasks", payload);
                     showNotification("Task created successfully!", 'success');
                     $("#createTaskForm").reset();
-                    loadAllTasks();
-                    loadAdminDashboard(); // Refresh Stats
+                    // INSTANT UPDATES
+                    loadAllTasks(); 
+                    loadAdminDashboard(); 
                 } catch (err) {
                     showNotification(`Failed to create task: ${err.message}`, 'error');
                 }
@@ -506,7 +485,6 @@
         );
     }
 
-    // New Delete Function with Confirmation
     async function deleteTask(taskId) {
         showConfirmation(
             "Delete Task?", 
@@ -520,8 +498,9 @@
                     if (!res.ok) throw new Error((await res.json()).message);
                     
                     showNotification("Task deleted successfully!", 'success');
+                    // INSTANT UPDATES
                     loadAllTasks();
-                    loadAdminDashboard(); // Refresh Stats
+                    loadAdminDashboard(); 
                 } catch (err) {
                     showNotification(`Failed to delete task: ${err.message}`, 'error');
                 }
@@ -591,11 +570,20 @@
             experience: form.experience.value,
         };
         try {
-            await fetch('/api/me', {
+            const res = await fetch('/api/me', {
                 method: 'PUT', headers: { "Content-Type": "application/json", Authorization: `Bearer ${state.token}` },
                 body: JSON.stringify(payload)
             });
+            const data = await res.json();
+            
             showNotification("Profile Saved!", 'success');
+            
+            // INSTANT UI UPDATE WITHOUT RELOAD
+            state.me = data.user;
+            sessionStorage.setItem("me", JSON.stringify(data.user));
+            const headerName = document.getElementById("welcome-header-name");
+            if(headerName) headerName.textContent = `Welcome, ${data.user.name}`;
+
         } catch (err) {
             showNotification("Failed to save profile.", 'error');
         }
@@ -660,26 +648,28 @@
     }
 
     async function gradeSubmission(submissionId) {
-    const points = $(`#grade-${submissionId}`).value;
-    if (!points) {
-        showNotification("Please enter a point value.", 'warning');
-        return;
-    }
-    try {
-        await fetch(`/api/submissions/${submissionId}/grade`, {
-            method: 'PATCH', headers: { "Content-Type": "application/json", Authorization: `Bearer ${state.token}` },
-            body: JSON.stringify({ pointsAwarded: points })
-        });
-
-        showNotification("Graded successfully!", 'success');
-        $('#taskSubmissionsModal').close(); 
-        loadAllTasks();       
-        loadAdminMembers();
+        const points = $(`#grade-${submissionId}`).value;
+        if (!points) return showNotification("Please enter a point value.", 'warning');
         
-    } catch (err) {
-        showNotification("Failed to grade.", 'error');
+        try {
+            await fetch(`/api/submissions/${submissionId}/grade`, {
+                method: 'PATCH', headers: { "Content-Type": "application/json", Authorization: `Bearer ${state.token}` },
+                body: JSON.stringify({ pointsAwarded: points })
+            });
+
+            showNotification("Graded successfully!", 'success');
+            $('#taskSubmissionsModal').close(); 
+            
+            // INSTANT UI REFRESH
+            loadAllTasks();       
+            loadAdminMembers();
+            loadAdminDashboard();
+            loadLeaderboard('admin-leaderboard');
+            
+        } catch (err) {
+            showNotification("Failed to grade.", 'error');
+        }
     }
-}
 
     async function viewTaskSubmissions(taskId){
         const { task, submissions } = await fetchApi(`/api/tasks/${taskId}`);
@@ -687,7 +677,6 @@
         modal.innerHTML = `
             <button onclick="this.closest('dialog').close()" class="absolute top-4 right-4 text-3xl text-text-muted">&times;</button>
             <h3 class="text-2xl font-bold mb-4">${task.title} Submissions</h3>
-            <button class="btn-primary text-sm py-2 px-4 mb-4 rounded-lg" onclick="exportSubmissionsCSV('${task.title}', this.nextElementSibling.querySelector('table'))">Export CSV</button>
             <div class="max-h-[60vh] overflow-y-auto">
             <table class="w-full text-left">
     <thead class="sticky top-0 bg-bg-secondary">
@@ -742,11 +731,6 @@
         modal.showModal();
     }
 
-    function exportSubmissionsCSV(taskTitle, table) {
-         
-    }
-
-
     function renderChatUI(containerId) {
         $(`#${containerId}`).innerHTML = `
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[75vh]">
@@ -777,11 +761,8 @@
             const chatTabLink = $(`.nav-link[data-tab$="-chat"]`);
             if (!chatTabLink.classList.contains('active')) chatTabLink.click();
         } else {
-           
             const generalChannelLink = $(`#chat-channels a[onclick*="'general'"]`);
-            if (generalChannelLink) {
-                 generalChannelLink.classList.add('bg-bg-tertiary');
-            }
+            if (generalChannelLink) generalChannelLink.classList.add('bg-bg-tertiary');
         }
         
         state.currentChatTarget = targetRegNo;
@@ -859,7 +840,6 @@
             chatTab.querySelector('.chat-notification')?.classList.remove('hidden');
         }
     }
-
 
     document.addEventListener("DOMContentLoaded", () => {
         if (state.token && state.me) {
