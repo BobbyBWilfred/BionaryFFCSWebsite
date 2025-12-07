@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bionary Club • FFCS Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen">
+
+    <div id="app" class="max-w-screen-xl mx-auto p-4 sm:p-6 lg:p-8">
+
+        <section id="authSection" class="fade-in">
+            <div class="flex flex-col items-center justify-center min-h-[80vh]">
+                <div class="text-center mb-12">
+                    <h1 class="text-5xl md:text-6xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
+                        Bionary Club Portal
+                    </h1>
+                    <p class="text-lg md:text-xl text-text-muted mt-4">Select your role to sign in</p>
+                </div>
+
+                <div class="w-full max-w-4xl grid md:grid-cols-2 gap-8">
+
+                    <div id="memberRoleCard" class="role-card card rounded-2xl p-8 text-center" onclick="selectRole('member')">
+                        <i class="fas fa-users text-4xl text-blue-400 mb-4"></i>
+                        <h2 class="text-2xl font-bold">FFCS Member</h2>
+                        <div id="memberFormContainer" class="form-container text-left mt-6 space-y-4">
+                            <div>
+                                <label for="memberRegNo" class="block mb-2 text-sm font-medium text-text-secondary">Registration No.</label>
+                                <input id="memberRegNo" class="input-field w-full p-3 rounded-lg text-white">
+                            </div>
+                            <div>
+                                <label for="memberPassword" class="block mb-2 text-sm font-medium text-text-secondary">Password</label>
+                                <input id="memberPassword" type="password" class="input-field w-full p-3 rounded-lg text-white" placeholder="••••••••">
+                            </div>
+                            <button id="memberLoginBtn" class="btn-primary w-full py-3 rounded-lg font-bold text-white transition-transform transform hover:scale-105">Sign In</button>
+                        </div>
+                    </div>
+
+                    <div id="adminRoleCard" class="role-card card rounded-2xl p-8 text-center" onclick="selectRole('admin')">
+                        <i class="fas fa-user-shield text-4xl text-emerald-400 mb-4"></i>
+                        <h2 class="text-2xl font-bold">Admin</h2>
+                        <div id="adminFormContainer" class="form-container text-left mt-6 space-y-4">
+                            <div>
+                                <label for="adminRegNo" class="block mb-2 text-sm font-medium text-text-secondary">Admin ID</label>
+                                <input id="adminRegNo" class="input-field w-full p-3 rounded-lg text-white">
+                            </div>
+                            <div>
+                                <label for="adminPassword" class="block mb-2 text-sm font-medium text-text-secondary">Password</label>
+                                <input id="adminPassword" type="password" class="input-field w-full p-3 rounded-lg text-white" placeholder="••••••••">
+                            </div>
+                            <button id="adminLoginBtn" class="w-full py-3 rounded-lg font-bold text-white transition-transform transform hover:scale-105 bg-emerald-600 hover:bg-emerald-700">Sign In as Admin</button>
+                        </div>
+                    </div>
+                </div>
+                 <input type="hidden" id="role">
+            </div>
+        </section>
+
+        <main id="dashboardSection" class="hidden"></main>
+
+    </div>
+
+    <dialog id="taskDetailModal" class="card rounded-lg p-8 w-full max-w-2xl text-white bg-bg-secondary/80 backdrop-blur-lg"></dialog>
+    <dialog id="memberProfileModal" class="card rounded-lg p-8 w-full max-w-3xl text-white bg-bg-secondary/80 backdrop-blur-lg"></dialog>
+    <dialog id="taskSubmissionsModal" class="card rounded-lg p-8 w-full max-w-4xl text-white bg-bg-secondary/80 backdrop-blur-lg"></dialog>
+    <dialog id="proofViewerModal" class="card rounded-lg p-2 w-full max-w-4xl h-5/6 text-white bg-bg-secondary/90 backdrop-blur-lg">
+        <div class="flex justify-between items-center p-4">
+            <h3 id="proof-viewer-title" class="text-xl font-bold">Document Viewer</h3>
+            <button onclick="this.closest('dialog').close()" class="text-3xl text-text-muted hover:text-text-primary">&times;</button>
+        </div>
+        <div id="proof-viewer-content" class="w-full h-[calc(100%-60px)] bg-bg-primary rounded-b-lg"></div>
+    </dialog>
+
+    <div id="notification-container" class="fixed bottom-8 right-8 space-y-4 z-[100]"></div>
+
+
+<script>
+
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => document.querySelectorAll(s);
+
+    let state = {
+        token: sessionStorage.getItem("token"),
+        me: JSON.parse(sessionStorage.getItem("me")),
+        socket: null,
+        currentChatTarget: null,
+    };
+
+    
+    function selectRole(role) {
+        $('#role').value = role;
+        const memberCard = $('#memberRoleCard');
+        const adminCard = $('#adminRoleCard');
+        const memberForm = $('#memberFormContainer');
+        const adminForm = $('#adminFormContainer');
+
+        if (role === 'member') {
+            memberCard.classList.add('active');
+            adminCard.classList.remove('active');
+            memberForm.classList.add('active');
+            adminForm.classList.remove('active');
+        } else {
+            adminCard.classList.add('active');
+            memberCard.classList.remove('active');
+            adminForm.classList.add('active');
+            memberForm.classList.remove('active');
+        }
+    }
+
+    async function handleLogin() {
+        const role = $('#role').value;
+        if (!role) {
+            showNotification('Please select a role first.', 'warning');
+            return;
+        }
+        const regNo = $(`#${role}RegNo`).value.trim();
+        const password = $(`#${role}Password`).value;
+
+        if (!regNo || !password) {
+            showNotification('Please provide both credentials.', 'error');
+            return;
+        }
+
+        try {
+            const res = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ regNo, password, role })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message);
+
+            state.token = data.token;
+            state.me = data.user;
+            sessionStorage.setItem("token", state.token);
+            sessionStorage.setItem("me", JSON.stringify(state.me));
+            enterApp();
+        } catch (err) {
+            showNotification(`Login failed: ${err.message}`, 'error');
+        }
+    }
+
+    function logout() {
+        sessionStorage.clear();
+        state.token = null;
+        state.me = null;
+        if (state.socket) state.socket.disconnect();
+        window.location.reload();
+    }
+
+    function enterApp() {
+        $('#authSection').classList.add('hidden');
+        const dashboard = $('#dashboardSection');
+        dashboard.classList.remove('hidden');
+        dashboard.classList.add('fade-in');
+
+        const roleSpecificUI = state.me.role === 'admin' ? getAdminUI() : getMemberUI();
+        dashboard.innerHTML = `
+            <header class="flex flex-col sm:flex-row justify-between items-center mb-8 pb-6 border-b border-border-primary">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-full bg-blue-500 flex items-center justify-center text-xl font-bold">${state.me.name.substring(0, 2).toUpperCase()}</div>
+                    <div>
+                        <h1 class="text-3xl font-bold">Welcome, ${state.me.name}</h1>
+                        <p class="text-sm text-blue-400 font-semibold uppercase tracking-wider">${state.me.role}</p>
+                    </div>
+                </div>
+                <button onclick="logout()" class="mt-4 sm:mt-0 bg-bg-secondary hover:bg-bg-tertiary text-text-secondary font-bold py-2 px-4 rounded-lg flex items-center gap-2">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </header>
+            <div class="flex flex-col lg:flex-row gap-8">
+                <nav class="flex-shrink-0 lg:w-64">
+                    <ul class="space-y-2">
+                        ${roleSpecificUI.navLinks}
+                    </ul>
+                </nav>
+                <div class="flex-grow">
+                    ${roleSpecificUI.tabs}
+                </div>
+            </div>
+        `;
+        setupNavigation();
+
+        if(state.me.role === 'admin') loadAdminContent();
+        else loadMemberContent();
+    }
+
+    function getAdminUI() {
+        return {
+            navLinks: `
+                <li><a href="#" class="nav-link flex items-center gap-3 p-3 rounded-lg" data-tab="admin-dashboard"><i class="fas fa-chart-pie w-5 text-center"></i> Dashboard</a></li>
+                <li><a href="#" class="nav-link flex items-center gap-3 p-3 rounded-lg" data-tab="admin-members"><i class="fas fa-users w-5 text-center"></i> Members</a></li>
+                <li><a href="#" class="nav-link flex items-center gap-3 p-3 rounded-lg" data-tab="admin-tasks"><i class="fas fa-tasks w-5 text-center"></i> Tasks</a></li>
+                <li><a href="#" class="nav-link flex items-center gap-3 p-3 rounded-lg" data-tab="admin-leaderboard"><i class="fas fa-trophy w-5 text-center"></i> Leaderboard</a></li>
+                
+            `,
+            tabs: `
+                <div id="admin-dashboard" class="tab-content hidden"></div>
+                <div id="admin-members" class="tab-content hidden"></div>
+                <div id="admin-tasks" class="tab-content hidden"></div>
+                <div id="admin-leaderboard" class="tab-content hidden"></div>
+                
+            `
+        };
+    }
+
+    function getMemberUI() {
+        return {
+            navLinks: `
+                <li><a href="#" class="nav-link flex items-center gap-3 p-3 rounded-lg" data-tab="member-tasks"><i class="fas fa-tasks w-5 text-center"></i> My Tasks</a></li>
+                <li><a href="#" class="nav-link flex items-center gap-3 p-3 rounded-lg" data-tab="member-profile"><i class="fas fa-user-circle w-5 text-center"></i> My Profile</a></li>
+                <li><a href="#" class="nav-link flex items-center gap-3 p-3 rounded-lg" data-tab="member-leaderboard"><i class="fas fa-trophy w-5 text-center"></i> Leaderboard</a></li>
+                
+            `,
+            tabs: `
+                <div id="member-tasks" class="tab-content hidden"></div>
+                <div id="member-profile" class="tab-content hidden"></div>
+                <div id="member-leaderboard" class="tab-content hidden"></div>
+                
+            `
+        };
+    }
+    
+    function setupNavigation() {
+        const navLinks = $$('.nav-link');
+        navLinks.forEach(link => {
+            link.onclick = (e) => {
+                e.preventDefault();
+                const tabId = link.getAttribute('data-tab');
+                 if (tabId.endsWith('-chat')) {
+                    link.querySelector('.chat-notification')?.classList.add('hidden');
+                }
+                $$('.tab-content').forEach(tab => tab.classList.add('hidden'));
+                const activeTab = $(`#${tabId}`);
+                activeTab.classList.remove('hidden');
+                activeTab.classList.add('fade-in');
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+            };
+        });
+        navLinks[0].click();
+    }
+
+    async function loadMemberTasks() {
+        const res = await fetchApi("/api/my-tasks");
+        const container = $("#member-tasks");
+        if (!res.tasks?.length) {
+            container.innerHTML = `<div class="card p-10 rounded-lg text-center"><p class="text-text-muted text-lg">No tasks assigned yet. Great job!</p></div>`;
+            return;
+        }
+        container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">${res.tasks.map(getTaskCardHTML).join("")}</div>`;
+    }
+
+    function getTaskCardHTML(task) {
+        const statusMap = {
+            pending: { text: "Pending", color: "bg-accent-warning", icon: "fa-clock" },
+            submitted: { text: "Submitted", color: "bg-accent-primary", icon: "fa-paper-plane" },
+            graded: { text: "Graded", color: "bg-accent-success", icon: "fa-check-circle" }
+        };
+        const status = statusMap[task.status];
+        return `
+            <div class="card rounded-lg p-6 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-xl mb-2">${task.title}</h3>
+                        <span class="text-lg font-semibold text-blue-400">${task.points} pts</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm ${status.color.replace('bg-','text-')}">
+                        <span class="font-semibold py-1 px-2.5 rounded-full text-xs text-white ${status.color}">
+                            <i class="fas ${status.icon} mr-1"></i> ${status.text}
+                        </span>
+                    </div>
+                    <p class="text-xs text-text-muted mt-3">Due: ${task.deadline ? new Date(task.deadline).toLocaleString() : 'No deadline'}</p>
+                </div>
+                <div class="mt-6">
+                    ${task.status === 'graded' ? `<p class="font-bold text-lg text-accent-success">Awarded: ${task.pointsAwarded} points</p>` : ''}
+                    <button class="w-full mt-2 bg-bg-tertiary hover:bg-blue-600 text-text-secondary font-bold py-2 px-4 rounded-lg" onclick="showTaskDetails('${task.taskId}')">View Details</button>
+                </div>
+            </div>
+        `;
+    }
+
+    async function showTaskDetails(taskId) {
+        const res = await fetchApi(`/api/tasks/${taskId}`);
+        const mySubmission = res.submissions.find(s => s.userId._id === state.me._id);
+        const task = res.task;
+
+        const modal = $('#taskDetailModal');
+        modal.innerHTML = `
+            <button onclick="this.closest('dialog').close()" class="absolute top-4 right-4 text-3xl text-text-muted hover:text-text-primary">&times;</button>
+            <h2 class="text-3xl font-bold">${task.title}</h2>
+            <p class="text-text-muted mt-1">Points: ${task.points}</p>
+            <p class="my-6 text-text-secondary">${task.description}</p>
+            
+            <div class="mt-6 pt-6 border-t border-border-primary">
+                <h3 class="text-xl font-bold mb-4">Your Submission</h3>
+                ${task.status !== 'graded' ? `
+                <form id="submissionForm" class="space-y-4" data-task-id="${task._id}">
+                    <textarea class="input-field w-full p-2 rounded text-sm h-24" placeholder="Add a note about your submission..." required>${mySubmission?.description || ''}</textarea>
+                    <input type="file" required class="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-200 file:text-blue-800 hover:file:bg-blue-300">
+                    <button type="submit" class="btn-primary px-5 py-2.5 rounded-lg font-semibold">Submit Work</button>
+                </form>
+                ` : `<p class="text-accent-success font-semibold">This task has been graded. No further submissions are allowed.</p>`}
+            </div>
+        `;
+        modal.showModal();
+        if ($('#submissionForm')) {
+            $('#submissionForm').onsubmit = handleSubmission;
+        }
+    }
+
+    async function handleSubmission(e) {
+        e.preventDefault();
+        const form = e.target;
+        const taskId = form.dataset.taskId;
+        const description = form.querySelector('textarea').value;
+        const file = form.querySelector('input[type=file]').files[0];
+
+        if (!file) return showNotification("Please upload a proof file.", 'error');
+
+        const formData = new FormData();
+        formData.append('taskId', taskId);
+        formData.append('description', description);
+        formData.append('proof', file);
+
+        try {
+            await postApi('/api/submissions', formData, true);
+            showNotification('Task submitted successfully!', 'success');
+            loadMemberTasks();
+            $('#taskDetailModal').close();
+        } catch (error) {
+            showNotification(`Submission failed: ${error.message}`, 'error');
+        }
+    }
+
+
+    async function fetchApi(endpoint) {
+        const res = await fetch(endpoint, { headers: { Authorization: `Bearer ${state.token}` } });
+        if (!res.ok) throw new Error('Failed to fetch data');
+        return res.json();
+    }
+    
+    async function postApi(endpoint, body, isFormData = false) {
+        const headers = { Authorization: `Bearer ${state.token}` };
+        if (!isFormData) {
+            headers['Content-Type'] = 'application/json';
+        }
+        const res = await fetch(endpoint, {
+            method: 'POST',
+            headers,
+            body: isFormData ? body : JSON.stringify(body),
+        });
+        if (!res.ok) throw new Error((await res.json()).message);
+        return res.json();
+    }
+
+
+
+    async function loadAdminContent() {
+        loadAdminDashboard();
+        loadAdminMembers();
+        renderAdminTasksUI();
+        loadAllTasks();
+        loadTaskAssignmentOptions();
+        loadLeaderboard('admin-leaderboard');
+        renderChatUI('admin-chat');
+        connectSocket(); 
+    }
+
+    async function loadMemberContent() {
+        loadMemberTasks();
+        renderProfileUI('member-profile');
+        loadMyProfileData();
+        loadLeaderboard('member-leaderboard');
+        renderChatUI('member-chat');
+        connectSocket(); 
+    }
+
+    async function loadAdminDashboard() {
+        const kpis = await fetchApi('/api/admin/kpis');
+        $('#admin-dashboard').innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="card p-6 rounded-lg flex items-center gap-4 border-l-4 border-blue-400">
+                    <div class="p-3 bg-blue-500/20 rounded-full"><i class="fas fa-users text-2xl text-blue-400"></i></div>
+                    <div><p class="text-text-muted">Total Members</p><p class="text-3xl font-bold">${kpis.members}</p></div>
+                </div>
+                <div class="card p-6 rounded-lg flex items-center gap-4 border-l-4 border-yellow-400">
+                    <div class="p-3 bg-yellow-500/20 rounded-full"><i class="fas fa-tasks text-2xl text-yellow-400"></i></div>
+                    <div><p class="text-text-muted">Open Tasks</p><p class="text-3xl font-bold">${kpis.openTasks}</p></div>
+                </div>
+                <div class="card p-6 rounded-lg flex items-center gap-4 border-l-4 border-red-400">
+                    <div class="p-3 bg-red-500/20 rounded-full"><i class="fas fa-hourglass-half text-2xl text-red-400"></i></div>
+                    <div><p class="text-text-muted">Pending Reviews</p><p class="text-3xl font-bold">${kpis.pendingReviews}</p></div>
+                </div>
+            </div>
+        `;
+    }
+
+    async function loadAdminMembers() {
+        const { users } = await fetchApi("/api/users");
+        $('#admin-members').innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">${users.map(user => `
+            <div class="card rounded-lg p-5 cursor-pointer hover:border-blue-500 transform hover:-translate-y-1" onclick="viewMemberProfile('${user._id}')">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-bg-tertiary flex items-center justify-center font-bold text-lg">${user.name.substring(0, 2).toUpperCase()}</div>
+                    <div class="min-w-0">
+    <h4 class="font-bold text-lg truncate">${user.name}</h4>
+    <p class="text-sm text-text-muted">${user.regNo}</p>
+</div>
+                </div>
+                <p class="text-sm mt-4 font-semibold">Score: <span class="text-blue-400 text-lg">${user.score || 0}</span></p>
+            </div>`).join("")}</div>`;
+    }
+    
+    function renderAdminTasksUI() {
+        $('#admin-tasks').innerHTML = `
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                <div class="lg:col-span-2 card p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4">Create New Task</h3>
+                    <form id="createTaskForm" class="space-y-4">
+                        <input id="taskTitle" class="input-field w-full p-2 rounded" placeholder="Task Title" required>
+                        <textarea id="taskDesc" class="input-field w-full p-2 rounded h-24" placeholder="Description" required></textarea>
+                        <input id="taskPoints" type="number" class="input-field w-full p-2 rounded" placeholder="Points" required>
+                        <input id="taskDeadline" type="datetime-local" class="input-field w-full p-2 rounded">
+                        <label class="text-sm text-text-muted">Assign to:</label>
+                        <select id="taskAssignTo" class="input-field w-full p-2 rounded text-white" multiple size="5"></select>
+                        <button type="submit" class="btn-primary w-full py-2.5 rounded-lg font-semibold">Create & Assign</button>
+                    </form>
+                </div>
+                <div class="lg:col-span-3 card p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4">All Tasks</h3>
+                    <div id="allTasksList" class="space-y-3 max-h-[28rem] overflow-y-auto pr-2"></div>
+                </div>
+            </div>
+        `;
+        $('#createTaskForm').onsubmit = createTask;
+    }
+
+    async function loadTaskAssignmentOptions() {
+        const { users } = await fetchApi("/api/users");
+        $('#taskAssignTo').innerHTML = `<option value="all" selected>All Members</option>${users.map(u => `<option value="${u._id}">${u.name} (${u.regNo})</option>`).join('')}`;
+    }
+
+    async function createTask(e) {
+        e.preventDefault();
+        const selectedOptions = Array.from($("#taskAssignTo").selectedOptions).map(opt => opt.value);
+        const payload = {
+            title: $("#taskTitle").value, description: $("#taskDesc").value,
+            points: Number($("#taskPoints").value),
+            deadline: $("#taskDeadline").value ? new Date($("#taskDeadline").value).toISOString() : null,
+            assignTo: selectedOptions,
+        };
+        try {
+            await postApi("/api/tasks", payload);
+            showNotification("Task created successfully!", 'success');
+            e.target.reset();
+            loadAllTasks();
+        } catch (err) {
+            showNotification(`Failed to create task: ${err.message}`, 'error');
+        }
+    }
+
+    async function loadAllTasks() {
+        const { tasks } = await fetchApi('/api/tasks');
+        $('#allTasksList').innerHTML = tasks.map(task => `
+            <div class="p-4 rounded-lg bg-bg-secondary flex justify-between items-center">
+                <div>
+                    <span class="font-semibold">${task.title}</span>
+                    <p class="text-xs text-text-muted">${task.points} Points • Due: ${task.deadline ? new Date(task.deadline).toLocaleDateString() : 'N/A'}</p>
+                </div>
+                <button class="bg-bg-tertiary hover:bg-blue-600 text-xs py-1.5 px-3 rounded-md" onclick="viewTaskSubmissions('${task._id}')">Submissions</button>
+            </div>
+        `).join('') || '<p class="text-text-muted">No tasks created yet.</p>';
+    }
+
+    function renderProfileUI(containerId){
+        $(`#${containerId}`).innerHTML = `
+            <div class="card p-8 rounded-lg space-y-6 max-w-3xl mx-auto">
+                <h2 class="text-2xl font-bold">Edit Your Profile</h2>
+                <form id="profileForm" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div><label class="text-sm text-text-muted">Full Name</label><input name="name" class="input-field p-2.5 rounded w-full mt-1"></div>
+                        <div><label class="text-sm text-text-muted">Email</label><input name="email" type="email" class="input-field p-2.5 rounded w-full mt-1"></div>
+                        <div><label class="text-sm text-text-muted">Phone</label><input name="phone" class="input-field p-2.5 rounded w-full mt-1"></div>
+                        <div><label class="text-sm text-text-muted">LinkedIn URL</label><input name="linkedin" class="input-field p-2.5 rounded w-full mt-1"></div>
+                        <div><label class="text-sm text-text-muted">GitHub URL</label><input name="github" class="input-field p-2.5 rounded w-full mt-1"></div>
+                        <div><label class="text-sm text-text-muted">Portfolio URL</label><input name="portfolio" class="input-field p-2.5 rounded w-full mt-1"></div>
+                    </div>
+                    <div>
+                        <label class="text-sm text-text-muted">Your Experience & Skills</label>
+                        <textarea name="experience" class="input-field p-2.5 rounded w-full h-24 mt-1"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary px-6 py-2.5 rounded-lg font-semibold">Save Profile</button>
+                </form>
+            </div>
+        `;
+        $('#profileForm').onsubmit = saveProfile;
+    }
+
+    async function loadMyProfileData() {
+        const { user } = await fetchApi("/api/me");
+        const form = $("#profileForm");
+        form.name.value = user.name || ''; form.email.value = user.email || '';
+        form.phone.value = user.phone || '';
+        form.linkedin.value = user.socialLinks?.linkedin || '';
+        form.github.value = user.socialLinks?.github || '';
+        form.portfolio.value = user.socialLinks?.portfolio || '';
+        form.experience.value = user.experience || '';
+    }
+
+    async function saveProfile(e) {
+        e.preventDefault();
+        const form = e.target;
+        const payload = {
+            name: form.name.value, email: form.email.value, phone: form.phone.value,
+            socialLinks: { linkedin: form.linkedin.value, github: form.github.value, portfolio: form.portfolio.value },
+            experience: form.experience.value,
+        };
+        try {
+            await fetch('/api/me', {
+                method: 'PUT', headers: { "Content-Type": "application/json", Authorization: `Bearer ${state.token}` },
+                body: JSON.stringify(payload)
+            });
+            showNotification("Profile Saved!", 'success');
+        } catch (err) {
+            showNotification("Failed to save profile.", 'error');
+        }
+    }
+
+    async function loadLeaderboard(containerId) {
+        const { leaderboard } = await fetchApi("/api/leaderboard");
+        const container = $(`#${containerId}`);
+        const rankStyles = [ 'border-yellow-400', 'border-gray-400', 'border-amber-600' ];
+        const rankIcons = ['🥇', '🥈', '🥉'];
+        container.innerHTML = `
+            <div class="card p-6 rounded-lg max-w-4xl mx-auto">
+                <h3 class="text-3xl font-bold mb-6 text-center">Leaderboard</h3>
+                <div class="space-y-3">${leaderboard.map((user, i) => `
+                    <div class="flex justify-between items-center p-4 rounded-lg border-l-4 ${rankStyles[i] || 'border-border-primary'} ${i < 3 ? 'bg-bg-secondary' : 'bg-bg-tertiary/50'}">
+                        <div class="flex items-center gap-4">
+                            <span class="font-bold text-lg w-8 text-center">${rankIcons[i] || i + 1}</span>
+                            <div>
+                                <p class="font-semibold">${user.name}</p>
+                                <p class="text-xs text-text-muted">${user.regNo}</p>
+                            </div>
+                        </div>
+                        <span class="font-bold text-lg text-blue-400">${user.score} pts</span>
+                    </div>`).join("")}
+                </div>
+            </div>`;
+    }
+
+    async function viewMemberProfile(userId) {
+        const { user, submissions } = await fetchApi(`/api/users/${userId}`);
+        const modal = $("#memberProfileModal");
+        modal.innerHTML = `
+            <button onclick="this.closest('dialog').close()" class="absolute top-4 right-4 text-3xl text-text-muted">&times;</button>
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 rounded-full bg-bg-tertiary flex items-center justify-center font-bold text-2xl">${user.name.substring(0, 2).toUpperCase()}</div>
+                <div>
+                    <h3 class="text-2xl font-bold">${user.name}</h3>
+                    <p class="text-base text-text-muted">${user.regNo}</p>
+                </div>
+            </div>
+            <div class="flex space-x-4 my-4">
+                <a href="${user.socialLinks?.linkedin || '#'}" target="_blank" class="text-blue-400 hover:underline">LinkedIn</a>
+                <a href="${user.socialLinks?.github || '#'}" target="_blank" class="text-blue-400 hover:underline">GitHub</a>
+                <a href="${user.socialLinks?.portfolio || '#'}" target="_blank" class="text-blue-400 hover:underline">Portfolio</a>
+            </div>
+            <p class="my-4 text-text-secondary bg-bg-primary p-4 rounded-lg">${user.experience || 'No experience listed.'}</p>
+            <button class="btn-primary text-sm py-2 px-4 rounded-lg" onclick="openChatWith('${user.regNo}', event)">Message ${user.name}</button>
+            <h4 class="text-xl font-bold mt-6 border-t border-border-primary pt-4 mb-3">Submissions</h4>
+            <div class="max-h-64 overflow-y-auto space-y-3 pr-2">${submissions.map(s => `
+                <div class="p-4 rounded-lg bg-bg-primary">
+                    <p><strong>${s.taskId.title}</strong> - Status: <span class="uppercase font-semibold">${s.status}</span></p>
+                    <a href="#" onclick="viewProof('${s.proofPath}', event)" class="text-sm text-blue-400 hover:underline">View Proof</a>
+                    <div class="flex items-center space-x-2 mt-2">
+                        <input type="number" class="input-field p-1.5 rounded w-24 text-sm" value="${s.pointsAwarded}" id="grade-${s._id}">
+                        <button class="btn-primary text-xs px-3 py-1.5 rounded-md" onclick="gradeSubmission('${s._id}')">Grade</button>
+                        <span class="text-xs text-text-muted">/ ${s.taskId.points} pts</span>
+                    </div>
+                </div>`).join('') || '<p class="text-text-muted">No submissions yet.</p>'}
+            </div>
+        `;
+        modal.showModal();
+    }
+
+    async function gradeSubmission(submissionId) {
+    const points = $(`#grade-${submissionId}`).value;
+    if (!points) {
+        showNotification("Please enter a point value.", 'warning');
+        return;
+    }
+    try {
+        await fetch(`/api/submissions/${submissionId}/grade`, {
+            method: 'PATCH', headers: { "Content-Type": "application/json", Authorization: `Bearer ${state.token}` },
+            body: JSON.stringify({ pointsAwarded: points })
+        });
+
+        showNotification("Graded successfully!", 'success');
+        $('#taskSubmissionsModal').close(); 
+        loadAllTasks();      
+        loadAdminMembers();
+        
+    } catch (err) {
+        showNotification("Failed to grade.", 'error');
+    }
+}
+
+    async function viewTaskSubmissions(taskId){
+        const { task, submissions } = await fetchApi(`/api/tasks/${taskId}`);
+        const modal = $("#taskSubmissionsModal");
+        modal.innerHTML = `
+            <button onclick="this.closest('dialog').close()" class="absolute top-4 right-4 text-3xl text-text-muted">&times;</button>
+            <h3 class="text-2xl font-bold mb-4">${task.title} Submissions</h3>
+            <button class="btn-primary text-sm py-2 px-4 mb-4 rounded-lg" onclick="exportSubmissionsCSV('${task.title}', this.nextElementSibling.querySelector('table'))">Export CSV</button>
+            <div class="max-h-[60vh] overflow-y-auto">
+            <table class="w-full text-left">
+    <thead class="sticky top-0 bg-bg-secondary">
+        <tr class="border-b border-border-primary">
+            <th class="p-3">Member</th>
+            <th class="p-3">Status</th>
+            <th class="p-3">Score</th>
+            <th class="p-3">Proof</th>
+            <th class="p-3">Grade Action</th> </tr>
+    </thead>
+    <tbody>
+        ${submissions.map(s => `
+        <tr class="border-b border-border-primary/50">
+            <td class="p-3">${s.userId.name} (${s.userId.regNo})</td>
+            <td class="p-3 uppercase font-semibold text-sm">${s.status}</td>
+            <td class="p-3">${s.pointsAwarded} / ${task.points}</td>
+            <td class="p-3"><a href="#" onclick="viewProof('${s.proofPath}', event)" class="text-blue-400 hover:underline">View</a></td>
+            
+            <td class="p-3">
+                ${s.status !== 'graded' ? `
+                <div class="flex items-center space-x-2">
+                    <input type="number" class="input-field p-1.5 rounded w-20 text-sm" placeholder="pts" id="grade-${s._id}">
+                    <button class="btn-primary text-xs px-3 py-1.5 rounded-md" onclick="gradeSubmission('${s._id}')">Grade</button>
+                </div>
+                ` : `<span class="text-accent-success font-semibold">Graded</span>`}
+            </td>
+            </tr>`).join('') || `<tr><td colspan="5" class="p-4 text-center text-text-muted">No submissions.</td></tr>`}
+    </tbody>
+</table>
+            </div>
+        `;
+        modal.showModal();
+    }
+
+    function viewProof(filePath, event) {
+        event.preventDefault();
+        const modal = $('#proofViewerModal');
+        const content = $('#proof-viewer-content');
+        const fileExtension = filePath.split('.').pop().toLowerCase();
+        $('#proof-viewer-title').textContent = `Proof: ${filePath.split('/').pop()}`;
+        
+        if (['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(fileExtension)) {
+            content.innerHTML = `<img src="${filePath}" alt="Proof" class="w-full h-full object-contain">`;
+        } else if (fileExtension === 'pdf') {
+            content.innerHTML = `<iframe src="${filePath}" class="w-full h-full border-0"></iframe>`;
+        } else {
+            content.innerHTML = `<div class="p-4 text-center flex flex-col items-center justify-center h-full">
+                <p class="text-text-muted">Unsupported file type for inline viewing.</p>
+                <a href="${filePath}" target="_blank" class="btn-primary mt-4 inline-block px-4 py-2 rounded">Download File</a>
+            </div>`;
+        }
+        modal.showModal();
+    }
+
+    function exportSubmissionsCSV(taskTitle, table) {
+        
+    }
+
+
+    function renderChatUI(containerId) {
+        $(`#${containerId}`).innerHTML = `
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[75vh]">
+                <div class="lg:col-span-1 card p-4 rounded-lg flex flex-col">
+                    <h3 class="text-xl font-bold mb-4 px-2">Channels</h3>
+                    <ul id="chat-channels" class="space-y-1 overflow-y-auto flex-grow">
+                        <li><a href="#" class="flex items-center gap-3 p-3 rounded-lg hover:bg-bg-tertiary font-semibold" onclick="openChatWith('general', event)"><span class="text-text-muted">#</span> General</a></li>
+                        ${state.me.role === 'member' ? `<li><a href="#" class="flex items-center gap-3 p-3 rounded-lg hover:bg-bg-tertiary font-semibold" onclick="openChatWith('ADMIN', event)"><div class="w-2 h-2 rounded-full bg-green-400"></div>Admin DM</a></li>` : ''}
+                    </ul>
+                </div>
+                <div class="lg:col-span-3 card rounded-lg flex flex-col p-4">
+                    <h3 class="text-xl font-bold mb-4 pb-4 border-b border-border-primary" id="chat-header"></h3>
+                    <div class="flex-grow overflow-y-auto p-2 space-y-4" id="chat-messages"></div>
+                    <form id="chat-form" class="flex mt-4 space-x-2">
+                        <input id="chat-input" class="input-field flex-grow p-3 rounded-lg" placeholder="Type a message...">
+                        <button type="submit" class="btn-primary px-6 rounded-lg font-semibold"><i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>`;
+        $('#chat-form').onsubmit = sendChatMessage;
+    }
+
+    function openChatWith(targetRegNo, event) {
+        if (event) {
+            event.preventDefault();
+            $$('#chat-channels a').forEach(a => a.classList.remove('bg-bg-tertiary'));
+            event.currentTarget.classList.add('bg-bg-tertiary');
+            const chatTabLink = $(`.nav-link[data-tab$="-chat"]`);
+            if (!chatTabLink.classList.contains('active')) chatTabLink.click();
+        } else {
+          
+            const generalChannelLink = $(`#chat-channels a[onclick*="'general'"]`);
+            if (generalChannelLink) {
+                 generalChannelLink.classList.add('bg-bg-tertiary');
+            }
+        }
+        
+        state.currentChatTarget = targetRegNo;
+        $("#chat-header").textContent = targetRegNo === 'general' ? '# General Chat' : `DM with ${targetRegNo}`;
+        $("#chat-messages").innerHTML = '';
+        
+        if (state.socket) {
+            const eventName = targetRegNo === 'general' ? 'general:history' : 'dm:history';
+            const payload = targetRegNo === 'general' ? {} : { withRegNo: targetRegNo };
+            state.socket.emit(eventName, payload);
+        }
+    }
+
+    function sendChatMessage(e) {
+        e.preventDefault();
+        const input = $("#chat-input");
+        if (!input.value.trim() || !state.socket) return;
+
+        const eventName = state.currentChatTarget === 'general' ? "general:send" : "dm:send";
+        const payload = { text: input.value.trim() };
+        if (state.currentChatTarget !== 'general') payload.toRegNo = state.currentChatTarget;
+        
+        state.socket.emit(eventName, payload);
+        input.value = '';
+    }
+
+    function connectSocket() {
+        if (state.socket) state.socket.disconnect();
+        state.socket = io({ auth: { token: state.token } });
+
+        state.socket.on("general:history", (msgs) => {
+            if (state.currentChatTarget === 'general') renderMessages(msgs);
+        });
+        state.socket.on("general:new", (msg) => {
+            if (state.currentChatTarget === 'general') appendMessage(msg);
+            showChatNotification();
+        });
+        state.socket.on("dm:history", ({ messages }) => renderMessages(messages));
+        state.socket.on("dm:new", (msg) => {
+            const otherUser = msg.fromRegNo === state.me.regNo ? msg.toRegNo : msg.fromRegNo;
+            if (state.currentChatTarget === otherUser) appendMessage(msg);
+            showChatNotification();
+        });
+
+        openChatWith('general', null);
+    }
+    
+    function renderMessages(msgs) {
+        const box = $("#chat-messages");
+        box.innerHTML = '';
+        msgs.forEach(msg => appendMessage(msg, false));
+        box.scrollTop = box.scrollHeight;
+    }
+
+    function appendMessage(msg, shouldScroll = true) {
+        const box = $("#chat-messages");
+        const isMe = msg.fromRegNo === state.me.regNo;
+        const div = document.createElement('div');
+        div.className = `flex gap-3 items-end ${isMe ? 'flex-row-reverse' : ''}`;
+        div.innerHTML = `
+            <div class="w-8 h-8 rounded-full bg-bg-tertiary flex items-center justify-center font-bold text-xs flex-shrink-0">${msg.fromName.substring(0, 2).toUpperCase()}</div>
+            <div class="max-w-md">
+                <div class="${isMe ? 'bg-blue-600' : 'bg-bg-tertiary'} rounded-lg p-3">
+                    <p class="text-sm">${msg.text}</p>
+                </div>
+                <div class="text-xs text-text-muted mt-1.5 px-1 ${isMe ? 'text-right' : 'text-left'}">${isMe ? 'You' : msg.fromName} • ${new Date(msg.createdAt).toLocaleTimeString()}</div>
+            </div>`;
+        box.appendChild(div);
+        if (shouldScroll) box.scrollTop = box.scrollHeight;
+    }
+
+    function showChatNotification() {
+        const chatTab = $(`.nav-link[data-tab$="-chat"]`);
+        if (chatTab && !chatTab.classList.contains('active')) {
+            chatTab.querySelector('.chat-notification')?.classList.remove('hidden');
+        }
+    }
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+        if (state.token && state.me) {
+            enterApp();
+        } else {
+            $('#memberLoginBtn').onclick = handleLogin;
+            $('#adminLoginBtn').onclick = handleLogin;
+            selectRole('member'); 
+        }
+    });
+
+</script>
+</body>
+</html>
+
+
